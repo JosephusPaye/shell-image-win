@@ -1,15 +1,14 @@
-const {writeFileSync} = require('fs');
+const { writeFileSync } = require('fs');
+const mod = require('./index');
+// { getIconForPath, ICON_SIZE_LARGE }
 
-const {
-  getIconForPath,
-  ICON_SIZE_MEDIUM,
-  ICON_SIZE_LARGE,
-} = require('./index');
+console.log(mod);
 
-getIconForPath("C:\\code\\ww.docx", ICON_SIZE_LARGE, (err, result) => {
-  if (err) {
-    console.error(err);
-  } else {
-    writeFileSync("icon.png", result);
-  }
+mod.getIconForPath('C:\\code\\ww.docx', mod.ICON_SIZE_LARGE, (err, result) => {
+    if (err) {
+        console.error(err);
+        return;
+    }
+
+    writeFileSync('icon.png', result);
 });

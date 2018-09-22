@@ -1,82 +1,62 @@
-# system-icon
+# file-icon-win
 
-Get associated file/folder icon for Node.js.
+Get the associated shell icon for a given path on Windows.
+
+The shell icon is the icon or thumbnail that Windows Explorer would display for the item, as returned by [IShellItemImageFactory::GetImage](https://docs.microsoft.com/en-us/windows/desktop/api/shobjidl_core/nf-shobjidl_core-ishellitemimagefactory-getimage).
+
+Windows only, requires Vista or higher.
 
 ## Installation
 
 ```bash
-$ npm install --save system-icon
+npm install JosephusPaye/file-icon-win --save
 ```
-
-## Supported platforms
-
-* macOS 10.6 or later
-* Windows Vista or later
 
 ## Usage
 
-Get icon for file or folder path:
-
 ```js
-const {writeFileSync} = require('fs');
-const {
-  getIconForPath,
-  ICON_SIZE_MEDIUM
-} = require('system-icon');
+const { writeFileSync } = require('fs');
+const { getIconForPath, ICON_SIZE_LARGE } = require('file-icon-win');
 
-getIconForPath("/path/to/file_or_folder", ICON_SIZE_MEDIUM, (err, result) => {
-  if (err) {
-    console.error(err);
-  } else {
-    writeFileSync("icon.png", result);
-  }
-});
-```
+getIconForPath('C:\\', ICON_SIZE_LARGE, (err, result) => {
+    if (err) {
+        console.error(err);
+    }
 
-Get icon for file extension:
-
-```js
-const {writeFileSync} = require('fs');
-const {
-  getIconForExtension,
-  ICON_SIZE_MEDIUM
-} = require('system-icon');
-
-getIconForExtension(".ext", ICON_SIZE_MEDIUM, (err, result) => {
-  if (err) {
-    console.error(err);
-  } else {
-    writeFileSync("icon.png", result);
-  }
+    writeFileSync('icon.png', result);
 });
 ```
 
 ## API
 
-### Constants
-
-#### Size constants
+### Size constants
 
 The correspondence between the size constants and the icon size actually obtainable on each platform is as follows:
 
-| Constant                | Windows | macOS   |
-| ----------------------- | ------- | ------- |
-| `ICON_SIZE_EXTRA_SMALL` |  16x16  |  16x16  |
-| `ICON_SIZE_SMALL`       |  32x32  |  32x32  |
-| `ICON_SIZE_MEDIUM`      |  64x64  |  64x64  |
-| `ICON_SIZE_LARGE`       | 256x256 | 256x256 |
-| `ICON_SIZE_EXTRA_LARGE` | 256x256 | 512x512 |
+| Constant                | Size    |
+| ----------------------- | ------- |
+| `ICON_SIZE_EXTRA_SMALL` |  16x16  |
+| `ICON_SIZE_SMALL`       |  32x32  |
+| `ICON_SIZE_MEDIUM`      |  64x64  |
+| `ICON_SIZE_LARGE`       | 256x256 |
+| `ICON_SIZE_EXTRA_LARGE` | 256x256 |
 
-### Functions
+### getIconForPath(path, size, callback)
 
-#### getIconForPath(path, size, callback)
+Gets the associated icon for the given file or folder path, and returns it as a buffer in PNG format.
 
-Gets associated icon for file or folder path, and returns it in the PNG format.
 
-#### getIconForExtension(extension, size, callback)
+## Credits
 
-Gets associated icon for file extension, and returns it in the PNG format.
+Most of the code here is adapted from [node-system-icon](https://github.com/mtojo/node-system-icon) by [@mtojo](https://github.com/mtojo).
 
-## License
+It was simplified to remove macOS support and use [IShellItemImageFactory::GetImage](https://docs.microsoft.com/en-us/windows/desktop/api/shobjidl_core/nf-shobjidl_core-ishellitemimagefactory-getimage) instead of [SHGetImageList](https://docs.microsoft.com/en-us/windows/desktop/api/shellapi/nf-shellapi-shgetimagelist).
 
-MIT
+## Related
+
+- [file-icon](https://github.com/sindresorhus/file-icon) (macOS only)
+- [node-system-icon](https://github.com/mtojo/node-system-icon) (Windows and macOS)
+
+## Licence
+
+[MIT](LICENCE), © 2018 Josephus Paye II
