@@ -1,6 +1,6 @@
 {
   "name": "file-icon-win",
-  "description": "Get the shell icon for a given file or folder",
+  "description": "Get the shell icon for a given path, as a PNG (Windows)",
   "version": "0.1.0",
   "author": "Josephus Paye II",
   "license": "MIT",

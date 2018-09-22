@@ -1,10 +1,8 @@
 # file-icon-win
 
-Get the associated shell icon for a given path on Windows.
+Get the associated shell icon for a given path on Windows, as a PNG. Requires Vista or higher.
 
 The shell icon is the icon or thumbnail that Windows Explorer would display for the item, as returned by [IShellItemImageFactory::GetImage](https://docs.microsoft.com/en-us/windows/desktop/api/shobjidl_core/nf-shobjidl_core-ishellitemimagefactory-getimage).
-
-Windows only, requires Vista or higher.
 
 ## Installation
 
