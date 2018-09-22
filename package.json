@@ -28,6 +28,7 @@
     "url": "https://github.com/mtojo/node-system-icon.git"
   },
   "scripts": {
-    "install": "node-gyp rebuild"
+    "install": "node-gyp rebuild",
+    "test": "node test.js"
   }
 }
