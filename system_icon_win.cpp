@@ -1,28 +1,25 @@
 #include "system_icon.hpp"
-#include <Commctrl.h>
-#include <CommonControls.h>
-#include <Windows.h>
-#include <shobjidl.h> //For IShellItemImageFactory
+#include <windows.h>
+#include <shobjidl.h>
 #include <cstddef>
 #include <cwchar>
 #include <memory>
-
 #include <algorithm>
+
 namespace Gdiplus {
-using std::max;
-using std::min;
+    using std::max;
+    using std::min;
 }
+
 #include <Gdiplus.h>
 
 class ComInit {
     public:
-        ComInit()
-        {
+        ComInit() {
             CoInitializeEx(0, COINIT_MULTITHREADED);
         }
 
-        ~ComInit()
-        {
+        ~ComInit() {
             CoUninitialize();
         }
 
@@ -33,49 +30,45 @@ class ComInit {
 
 class GdiPlusInit {
     public:
-        GdiPlusInit()
-        {
+        GdiPlusInit() {
             Gdiplus::GdiplusStartupInput startupInput;
-            Gdiplus::GdiplusStartup(std::addressof(this->token),
-                std::addressof(startupInput), nullptr);
+            Gdiplus::GdiplusStartup(
+                std::addressof(this->token),
+                std::addressof(startupInput),
+                nullptr
+            );
         }
 
-        ~GdiPlusInit()
-        {
+        ~GdiPlusInit() {
             Gdiplus::GdiplusShutdown(this->token);
         }
 
     private:
         GdiPlusInit(const GdiPlusInit&);
         GdiPlusInit& operator=(const GdiPlusInit&);
-
         ULONG_PTR token;
 };
 
 struct IStreamDeleter {
-    void operator()(IStream* pStream) const
-    {
+    void operator()(IStream* pStream) const {
         pStream->Release();
     }
 };
 
-std::wstring Utf8ToWide(const std::string& src)
-{
+std::wstring Utf8ToWide(const std::string& src) {
     const auto size = MultiByteToWideChar(CP_UTF8, 0u, src.data(), -1, nullptr, 0u);
     std::vector<wchar_t> dest(size, L'\0');
 
-    if (MultiByteToWideChar(CP_UTF8, 0u, src.data(), -1, dest.data(),
-            dest.size())
-        == 0) {
-        throw std::system_error{ static_cast<int>(GetLastError()),
-            std::system_category() };
+    if (
+        MultiByteToWideChar(CP_UTF8, 0u, src.data(), -1, dest.data(), dest.size()) == 0
+    ) {
+        throw std::system_error{ static_cast<int>(GetLastError()), std::system_category() };
     }
 
-    return std::wstring{ dest.begin(), dest.end() };
+    return std::wstring { dest.begin(), dest.end() };
 }
 
-int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
-{
+int GetEncoderClsid(const WCHAR* format, CLSID* pClsid) {
     UINT num = 0u;
     UINT size = 0u;
 
@@ -86,7 +79,8 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
     }
 
     std::unique_ptr<Gdiplus::ImageCodecInfo> pImageCodecInfo(
-        static_cast<Gdiplus::ImageCodecInfo*>(static_cast<void*>(new BYTE[size])));
+        static_cast<Gdiplus::ImageCodecInfo*>(static_cast<void*>(new BYTE[size]))
+    );
 
     if (pImageCodecInfo == nullptr) {
         return -1;
@@ -105,35 +99,36 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
 }
 
 HBITMAP GetIconBitmapForPath(const std::string& name) {
-    IShellItemImageFactory *pImageFactory;
     HBITMAP hbmp = NULL;
-    SIZE size = { 256, 256 };
-    PCWSTR pwszError = NULL;
+    PCWSTR errorMessage = NULL;
 
+    IShellItemImageFactory *pImageFactory;
     HRESULT hr = SHCreateItemFromParsingName(Utf8ToWide(name).c_str(), NULL, IID_PPV_ARGS(&pImageFactory));
 
     if (SUCCEEDED(hr)) {
+        SIZE size = { 256, 256 };
         hr = pImageFactory->GetImage(size, SIIGBF_BIGGERSIZEOK, &hbmp);
 
         if (FAILED(hr)) {
-            pwszError = L"IShellItemImageFactory::GetImage failed with error code %x";
+            errorMessage = L"IShellItemImageFactory::GetImage failed with error code %x";
         }
 
         pImageFactory->Release();
     } else {
-        pwszError = L"SHCreateItemFromParsingName failed with error %x";
+        errorMessage = L"SHCreateItemFromParsingName failed with error %x";
     }
 
     if (FAILED(hr)) {
-        wprintf(pwszError, hr);
+        wprintf(errorMessage, hr);
     }
 
     return hbmp;
 }
 
 std::unique_ptr<Gdiplus::Bitmap> CreateBitmapFromHBitmap(
-    HBITMAP hBitmap, std::vector<std::int32_t>& buffer)
-{
+    HBITMAP hBitmap,
+    std::vector<std::int32_t>& buffer
+) {
     BITMAP bm = { 0 };
     GetObject(hBitmap, sizeof(bm), std::addressof(bm));
 
@@ -152,10 +147,16 @@ std::unique_ptr<Gdiplus::Bitmap> CreateBitmapFromHBitmap(
 
         auto nBits = bm.bmWidth * bm.bmHeight;
         buffer.resize(nBits);
-        GetDIBits(hDC, hBitmap, 0, bm.bmHeight, std::addressof(buffer[0]),
-            std::addressof(bmi), DIB_RGB_COLORS);
+
+        GetDIBits(
+            hDC, hBitmap, 0, bm.bmHeight,
+            std::addressof(buffer[0]),
+            std::addressof(bmi),
+            DIB_RGB_COLORS
+        );
 
         auto hasAlpha = false;
+
         for (std::int32_t i = 0; i < nBits; i++) {
             if ((buffer[i] & 0xFF000000) != 0) {
                 hasAlpha = true;
@@ -163,22 +164,23 @@ std::unique_ptr<Gdiplus::Bitmap> CreateBitmapFromHBitmap(
             }
         }
 
-        bitmap.reset(new Gdiplus::Bitmap(
-            bm.bmWidth, bm.bmHeight, bm.bmWidth * sizeof(std::int32_t),
-            PixelFormat32bppARGB,
-            static_cast<BYTE*>(static_cast<void*>(std::addressof(buffer[0])))));
+        bitmap.reset(
+            new Gdiplus::Bitmap(
+                bm.bmWidth, bm.bmHeight, bm.bmWidth * sizeof(std::int32_t),
+                PixelFormat32bppARGB,
+                static_cast<BYTE*>(static_cast<void*>(std::addressof(buffer[0])))
+            )
+        );
 
         ReleaseDC(nullptr, hDC);
-    }
-    else {
+    } else {
         bitmap.reset(Gdiplus::Bitmap::FromHBITMAP(hBitmap, (HPALETTE) 0));
     }
 
     return bitmap;
 }
 
-std::vector<unsigned char> HBitmapToPNG(HBITMAP hBitmap)
-{
+std::vector<unsigned char> HBitmapToPNG(HBITMAP hBitmap) {
     GdiPlusInit init;
 
     std::vector<std::int32_t> buffer;
@@ -194,7 +196,7 @@ std::vector<unsigned char> HBitmapToPNG(HBITMAP hBitmap)
         return std::vector<unsigned char>{};
     }
 
-    std::unique_ptr<IStream, IStreamDeleter> pStream{ tmp };
+    std::unique_ptr<IStream, IStreamDeleter> pStream { tmp };
 
     if (bitmap->Save(pStream.get(), std::addressof(encoder), nullptr) != Gdiplus::Status::Ok) {
         return std::vector<unsigned char>{};
@@ -208,22 +210,26 @@ std::vector<unsigned char> HBitmapToPNG(HBITMAP hBitmap)
     }
 
     std::vector<unsigned char> result(
-        static_cast<std::size_t>(stg.cbSize.QuadPart));
+        static_cast<std::size_t>(stg.cbSize.QuadPart)
+    );
+
     ULONG ul;
 
-    if (pStream->Read(std::addressof(result[0]),
+    if (
+        pStream->Read(
+            std::addressof(result[0]),
             static_cast<ULONG>(stg.cbSize.QuadPart),
-            std::addressof(ul))
-            != S_OK
-        || stg.cbSize.QuadPart != ul) {
+            std::addressof(ul)
+        ) != S_OK
+        || (stg.cbSize.QuadPart != ul)
+    ) {
         return std::vector<unsigned char>{};
     }
 
     return result;
 }
 
-std::vector<unsigned char> GetIconBetter(const std::string& name, IconSize size, UINT flag)
-{
+std::vector<unsigned char> GetIconBetter(const std::string& name, IconSize size, UINT flag) {
     ComInit init;
 
     HBITMAP hBitmap = GetIconBitmapForPath(name);
@@ -233,18 +239,18 @@ std::vector<unsigned char> GetIconBetter(const std::string& name, IconSize size,
     }
 
     auto buffer = HBitmapToPNG(hBitmap);
+
     DeleteObject(hBitmap);
+
     return buffer;
 }
 
 template <>
-void SystemIconAsyncWorker<ExtensionTag>::Execute()
-{
+void SystemIconAsyncWorker<ExtensionTag>::Execute() {
     this->result = GetIconBetter(this->name, this->size, SHGFI_USEFILEATTRIBUTES);
 }
 
 template <>
-void SystemIconAsyncWorker<PathTag>::Execute()
-{
+void SystemIconAsyncWorker<PathTag>::Execute() {
     this->result = GetIconBetter(this->name, this->size, 0);
 }
