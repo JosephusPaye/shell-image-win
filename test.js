@@ -6,7 +6,7 @@ const {
   ICON_SIZE_LARGE,
 } = require('./index');
 
-getIconForPath("C:\\code\\Postman.lnk", ICON_SIZE_LARGE, (err, result) => {
+getIconForPath("C:\\code\\ww.docx", ICON_SIZE_LARGE, (err, result) => {
   if (err) {
     console.error(err);
   } else {
