@@ -4,7 +4,7 @@ const mod = require('./index');
 
 console.log(mod);
 
-mod.getIconForPath('C:\\code\\ww.docx', mod.ICON_SIZE_LARGE, (err, result) => {
+mod.getIconForPath('C:\\code\\ww.docx', (err, result) => {
     if (err) {
         console.error(err);
         return;

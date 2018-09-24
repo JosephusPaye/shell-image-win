@@ -9,14 +9,10 @@ enum class IconSize {
     ExtraLarge
 };
 
-struct ExtensionTag {};
-struct PathTag {};
-
-template <class Tag>
 class SystemIconAsyncWorker : public Nan::AsyncWorker {
     public:
-      SystemIconAsyncWorker(const char* name, IconSize size, Nan::Callback* callback) : Nan::AsyncWorker{callback}, name{ name }, size{ size } {}
-      void Execute() override;
+        SystemIconAsyncWorker(const char* name, Nan::Callback* callback) : Nan::AsyncWorker{callback}, name{ name } {}
+        void Execute() override;
 
     protected:
         void HandleOKCallback() override {
@@ -38,6 +34,5 @@ class SystemIconAsyncWorker : public Nan::AsyncWorker {
 
     private:
         std::string name;
-        IconSize size;
         std::vector<unsigned char> result;
 };

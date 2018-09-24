@@ -229,7 +229,7 @@ std::vector<unsigned char> HBitmapToPNG(HBITMAP hBitmap) {
     return result;
 }
 
-std::vector<unsigned char> GetIconBetter(const std::string& name, IconSize size, UINT flag) {
+std::vector<unsigned char> GetIconBetter(const std::string& name) {
     ComInit init;
 
     HBITMAP hBitmap = GetIconBitmapForPath(name);
@@ -245,12 +245,6 @@ std::vector<unsigned char> GetIconBetter(const std::string& name, IconSize size,
     return buffer;
 }
 
-template <>
-void SystemIconAsyncWorker<ExtensionTag>::Execute() {
-    this->result = GetIconBetter(this->name, this->size, SHGFI_USEFILEATTRIBUTES);
-}
-
-template <>
-void SystemIconAsyncWorker<PathTag>::Execute() {
-    this->result = GetIconBetter(this->name, this->size, 0);
+void SystemIconAsyncWorker::Execute() {
+    this->result = GetIconBetter(this->name);
 }
