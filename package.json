@@ -27,7 +27,7 @@
   },
   "scripts": {
     "install": "node-gyp rebuild",
-    "start": "node generate-image.js",
+    "extract": "node extract-image.js",
     "test": "node test/index.js"
   }
 }

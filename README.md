@@ -36,7 +36,7 @@ Get the associated shell image for a given path.
 
 #### `path`: String
 
-An absolute file system path or special `shell:` path. See [here](https://www.howtogeek.com/257715/how-to-open-hidden-system-folders-with-windos-shell-command/) for a list of special shell paths.
+An absolute file system path or special `shell:` path. See [this article](https://www.howtogeek.com/257715/how-to-open-hidden-system-folders-with-windos-shell-command/) for a list of special shell paths.
 
 #### `options`: Object
 

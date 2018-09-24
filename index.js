@@ -3,7 +3,7 @@ const addon = require('bindings')('addon');
 function getImageForPath(path, options = {}, callback) {
     options.width = options.width || 256;
     options.height = options.height || 256;
-    options.flags = options.flags || addon.flags.BiggerSizeOk;
+    options.flags = options.flags || addon.BiggerSizeOk;
 
     if (callback === undefined) {
         return new Promise((resolve, reject) => {
