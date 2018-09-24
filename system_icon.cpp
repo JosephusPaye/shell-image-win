@@ -92,7 +92,7 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid) {
     return -1;
 }
 
-HBITMAP GetIconBitmapForPath(const std::string& name, int width, int height, uint32_t flags) {
+HBITMAP GetIconBitmapForPath(const std::string& name, uint32_t width, uint32_t height, uint32_t flags) {
     HBITMAP hbmp = NULL;
     PCWSTR errorMessage = NULL;
 
@@ -115,9 +115,9 @@ HBITMAP GetIconBitmapForPath(const std::string& name, int width, int height, uin
         errorMessage = L"SHCreateItemFromParsingName failed with error %x";
     }
 
-    if (FAILED(hr)) {
-        wprintf(errorMessage, hr);
-    }
+    // if (FAILED(hr)) {
+    //     wprintf(errorMessage, hr);
+    // }
 
     return hbmp;
 }
@@ -226,7 +226,7 @@ std::vector<unsigned char> HBitmapToPNG(HBITMAP hBitmap) {
     return result;
 }
 
-std::vector<unsigned char> GetIconForPath(const std::string& name, int width, int height, uint32_t flags) {
+std::vector<unsigned char> GetIconForPath(const std::string& name, uint32_t width, uint32_t height, uint32_t flags) {
     ComInit init;
 
     HBITMAP hBitmap = GetIconBitmapForPath(name, width, height, flags);

@@ -32,8 +32,8 @@ NAN_METHOD(getIconForPath) {
     }
 
     v8::String::Utf8Value path{info[0]->ToString()};
-    auto width = static_cast<int>(info[1]->Int32Value());
-    auto height = static_cast<int>(info[2]->Int32Value());
+    auto width = static_cast<uint32_t>(info[1]->Int32Value());
+    auto height = static_cast<uint32_t>(info[2]->Int32Value());
     auto flags = static_cast<uint32_t>(info[3]->Int32Value());
     auto callback = new Nan::Callback(info[4].As<v8::Function>());
 
@@ -45,62 +45,62 @@ NAN_MODULE_INIT(init) {
 
     Nan::Set(
         target,
-        Nan::New("RESIZETOFIT").ToLocalChecked(),
-        Nan::New(static_cast<int>(SIIGBF_RESIZETOFIT))
+        Nan::New("ResizeToFit").ToLocalChecked(),
+        Nan::New(static_cast<uint32_t>(SIIGBF_RESIZETOFIT))
     );
 
     Nan::Set(
         target,
-        Nan::New("BIGGERSIZEOK").ToLocalChecked(),
-        Nan::New(static_cast<int>(SIIGBF_BIGGERSIZEOK))
+        Nan::New("BiggerSizeOk").ToLocalChecked(),
+        Nan::New(static_cast<uint32_t>(SIIGBF_BIGGERSIZEOK))
     );
 
     Nan::Set(
         target,
-        Nan::New("MEMORYONLY").ToLocalChecked(),
-        Nan::New(static_cast<int>(SIIGBF_MEMORYONLY))
+        Nan::New("MemoryOnly").ToLocalChecked(),
+        Nan::New(static_cast<uint32_t>(SIIGBF_MEMORYONLY))
     );
 
     Nan::Set(
         target,
-        Nan::New("ICONONLY").ToLocalChecked(),
-        Nan::New(static_cast<int>(SIIGBF_ICONONLY))
+        Nan::New("IconOnly").ToLocalChecked(),
+        Nan::New(static_cast<uint32_t>(SIIGBF_ICONONLY))
     );
 
     Nan::Set(
         target,
-        Nan::New("THUMBNAILONLY").ToLocalChecked(),
-        Nan::New(static_cast<int>(SIIGBF_THUMBNAILONLY))
+        Nan::New("ThumbnailOnly").ToLocalChecked(),
+        Nan::New(static_cast<uint32_t>(SIIGBF_THUMBNAILONLY))
     );
 
     Nan::Set(
         target,
-        Nan::New("INCACHEONLY").ToLocalChecked(),
-        Nan::New(static_cast<int>(SIIGBF_INCACHEONLY))
+        Nan::New("InCacheOnly").ToLocalChecked(),
+        Nan::New(static_cast<uint32_t>(SIIGBF_INCACHEONLY))
     );
 
     Nan::Set(
         target,
-        Nan::New("CROPTOSQUARE").ToLocalChecked(),
-        Nan::New(static_cast<int>(SIIGBF_CROPTOSQUARE))
+        Nan::New("CropToSquare").ToLocalChecked(),
+        Nan::New(static_cast<uint32_t>(SIIGBF_CROPTOSQUARE))
     );
 
     Nan::Set(
         target,
-        Nan::New("WIDETHUMBNAILS").ToLocalChecked(),
-        Nan::New(static_cast<int>(SIIGBF_WIDETHUMBNAILS))
+        Nan::New("WideThumbnails").ToLocalChecked(),
+        Nan::New(static_cast<uint32_t>(SIIGBF_WIDETHUMBNAILS))
     );
 
     Nan::Set(
         target,
-        Nan::New("ICONBACKGROUND").ToLocalChecked(),
-        Nan::New(static_cast<int>(SIIGBF_ICONBACKGROUND))
+        Nan::New("IconBackground").ToLocalChecked(),
+        Nan::New(static_cast<uint32_t>(SIIGBF_ICONBACKGROUND))
     );
 
     Nan::Set(
         target,
-        Nan::New("SCALEUP").ToLocalChecked(),
-        Nan::New(static_cast<int>(SIIGBF_SCALEUP))
+        Nan::New("ScaleUp").ToLocalChecked(),
+        Nan::New(static_cast<uint32_t>(SIIGBF_SCALEUP))
     );
 }
 
