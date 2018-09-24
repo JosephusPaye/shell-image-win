@@ -7,9 +7,9 @@
 #include <memory>
 #include <algorithm>
 
-class SystemIconAsyncWorker : public Nan::AsyncWorker {
+class FileIconAsyncWorker : public Nan::AsyncWorker {
     public:
-        SystemIconAsyncWorker(const char* name, uint32_t width, uint32_t height, uint32_t flags, Nan::Callback* callback)
+        FileIconAsyncWorker(const char* name, uint32_t width, uint32_t height, uint32_t flags, Nan::Callback* callback)
             : Nan::AsyncWorker{callback}, name{ name }, width{ width }, height{ height }, flags{ flags }
         {
             // Empty constructor

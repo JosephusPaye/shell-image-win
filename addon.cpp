@@ -1,4 +1,4 @@
-#include "system_icon.hpp"
+#include "file_icon.h"
 
 NAN_METHOD(getIconForPath) {
     if (info.Length() < 5) {
@@ -37,7 +37,7 @@ NAN_METHOD(getIconForPath) {
     auto flags = static_cast<uint32_t>(info[3]->Int32Value());
     auto callback = new Nan::Callback(info[4].As<v8::Function>());
 
-    Nan::AsyncQueueWorker(new SystemIconAsyncWorker(*path, width, height, flags, callback));
+    Nan::AsyncQueueWorker(new FileIconAsyncWorker(*path, width, height, flags, callback));
 }
 
 NAN_MODULE_INIT(init) {
@@ -104,4 +104,4 @@ NAN_MODULE_INIT(init) {
     );
 }
 
-NODE_MODULE(system_icon, init);
+NODE_MODULE(file_icon, init);

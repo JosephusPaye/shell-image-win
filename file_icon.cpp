@@ -1,4 +1,4 @@
-#include "system_icon.hpp"
+#include "file_icon.h"
 
 namespace Gdiplus {
     using std::max;
@@ -242,6 +242,6 @@ std::vector<unsigned char> GetIconForPath(const std::string& name, uint32_t widt
     return buffer;
 }
 
-void SystemIconAsyncWorker::Execute() {
+void FileIconAsyncWorker::Execute() {
     this->result = GetIconForPath(this->name, this->width, this->height, this->flags);
 }

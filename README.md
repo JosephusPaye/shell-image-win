@@ -43,6 +43,7 @@ The correspondence between the size constants and the icon size actually obtaina
 
 Gets the associated icon for the given file or folder path, and returns it as a buffer in PNG format.
 
+Path can be a special `shell:` path to get icons for special folders like the Recycle Bin. See [here](https://www.howtogeek.com/257715/how-to-open-hidden-system-folders-with-windos-shell-command/) for a list of special shell paths.
 
 ## Credits
 
