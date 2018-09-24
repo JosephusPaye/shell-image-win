@@ -1,10 +1,4 @@
 #include "system_icon.hpp"
-#include <windows.h>
-#include <shobjidl.h>
-#include <cstddef>
-#include <cwchar>
-#include <memory>
-#include <algorithm>
 
 namespace Gdiplus {
     using std::max;
@@ -98,7 +92,7 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid) {
     return -1;
 }
 
-HBITMAP GetIconBitmapForPath(const std::string& name, int width, int height) {
+HBITMAP GetIconBitmapForPath(const std::string& name, int width, int height, uint32_t flags) {
     HBITMAP hbmp = NULL;
     PCWSTR errorMessage = NULL;
 
@@ -106,11 +100,11 @@ HBITMAP GetIconBitmapForPath(const std::string& name, int width, int height) {
     HRESULT hr = SHCreateItemFromParsingName(Utf8ToWide(name).c_str(), NULL, IID_PPV_ARGS(&pImageFactory));
 
     if (SUCCEEDED(hr)) {
-        SIZE size = { 0, 0 };
+        SIZE size;
         size.cx = width;
         size.cy = height;
 
-        hr = pImageFactory->GetImage(size, SIIGBF_BIGGERSIZEOK, &hbmp);
+        hr = pImageFactory->GetImage(size, (SIIGBF) flags, &hbmp);
 
         if (FAILED(hr)) {
             errorMessage = L"IShellItemImageFactory::GetImage failed with error code %x";
@@ -232,10 +226,10 @@ std::vector<unsigned char> HBitmapToPNG(HBITMAP hBitmap) {
     return result;
 }
 
-std::vector<unsigned char> GetIconBetter(const std::string& name, int width, int height) {
+std::vector<unsigned char> GetIconForPath(const std::string& name, int width, int height, uint32_t flags) {
     ComInit init;
 
-    HBITMAP hBitmap = GetIconBitmapForPath(name, width, height);
+    HBITMAP hBitmap = GetIconBitmapForPath(name, width, height, flags);
 
     if (hBitmap == NULL) {
         return std::vector<unsigned char>{};
@@ -249,5 +243,5 @@ std::vector<unsigned char> GetIconBetter(const std::string& name, int width, int
 }
 
 void SystemIconAsyncWorker::Execute() {
-    this->result = GetIconBetter(this->name, this->width, this->height);
+    this->result = GetIconForPath(this->name, this->width, this->height, this->flags);
 }

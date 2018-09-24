@@ -1,5 +1,11 @@
 #include <nan.h>
 #include <string>
+#include <windows.h>
+#include <shobjidl.h>
+#include <cstddef>
+#include <cwchar>
+#include <memory>
+#include <algorithm>
 
 enum class IconSize {
     ExtraSmall,
@@ -11,7 +17,8 @@ enum class IconSize {
 
 class SystemIconAsyncWorker : public Nan::AsyncWorker {
     public:
-        SystemIconAsyncWorker(const char* name, int width, int height, Nan::Callback* callback) : Nan::AsyncWorker{callback}, name{ name }, width{ width }, height{ height } {}
+        SystemIconAsyncWorker(const char* name, int width, int height, uint32_t flags, Nan::Callback* callback):
+            Nan::AsyncWorker{callback}, name{ name }, width{ width }, height{ height }, flags{ flags } {}
         void Execute() override;
 
     protected:
@@ -36,5 +43,6 @@ class SystemIconAsyncWorker : public Nan::AsyncWorker {
         std::string name;
         int width;
         int height;
+        uint32_t flags;
         std::vector<unsigned char> result;
 };

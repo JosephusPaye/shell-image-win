@@ -4,7 +4,7 @@ const mod = require('./index');
 
 console.log(mod);
 
-mod.getIconForPath('C:\\code\\ww.docx', 100, 100, (err, result) => {
+mod.getIconForPath('C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Excel.lnk', 256, 256, mod.ICONBACKGROUND, (err, result) => {
     if (err) {
         console.error(err);
         return;
