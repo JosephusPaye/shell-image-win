@@ -11,7 +11,7 @@ enum class IconSize {
 
 class SystemIconAsyncWorker : public Nan::AsyncWorker {
     public:
-        SystemIconAsyncWorker(const char* name, Nan::Callback* callback) : Nan::AsyncWorker{callback}, name{ name } {}
+        SystemIconAsyncWorker(const char* name, int width, int height, Nan::Callback* callback) : Nan::AsyncWorker{callback}, name{ name }, width{ width }, height{ height } {}
         void Execute() override;
 
     protected:
@@ -34,5 +34,7 @@ class SystemIconAsyncWorker : public Nan::AsyncWorker {
 
     private:
         std::string name;
+        int width;
+        int height;
         std::vector<unsigned char> result;
 };

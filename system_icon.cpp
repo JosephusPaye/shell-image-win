@@ -98,7 +98,7 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid) {
     return -1;
 }
 
-HBITMAP GetIconBitmapForPath(const std::string& name) {
+HBITMAP GetIconBitmapForPath(const std::string& name, int width, int height) {
     HBITMAP hbmp = NULL;
     PCWSTR errorMessage = NULL;
 
@@ -106,7 +106,10 @@ HBITMAP GetIconBitmapForPath(const std::string& name) {
     HRESULT hr = SHCreateItemFromParsingName(Utf8ToWide(name).c_str(), NULL, IID_PPV_ARGS(&pImageFactory));
 
     if (SUCCEEDED(hr)) {
-        SIZE size = { 256, 256 };
+        SIZE size = { 0, 0 };
+        size.cx = width;
+        size.cy = height;
+
         hr = pImageFactory->GetImage(size, SIIGBF_BIGGERSIZEOK, &hbmp);
 
         if (FAILED(hr)) {
@@ -229,10 +232,10 @@ std::vector<unsigned char> HBitmapToPNG(HBITMAP hBitmap) {
     return result;
 }
 
-std::vector<unsigned char> GetIconBetter(const std::string& name) {
+std::vector<unsigned char> GetIconBetter(const std::string& name, int width, int height) {
     ComInit init;
 
-    HBITMAP hBitmap = GetIconBitmapForPath(name);
+    HBITMAP hBitmap = GetIconBitmapForPath(name, width, height);
 
     if (hBitmap == NULL) {
         return std::vector<unsigned char>{};
@@ -246,5 +249,5 @@ std::vector<unsigned char> GetIconBetter(const std::string& name) {
 }
 
 void SystemIconAsyncWorker::Execute() {
-    this->result = GetIconBetter(this->name);
+    this->result = GetIconBetter(this->name, this->width, this->height);
 }
