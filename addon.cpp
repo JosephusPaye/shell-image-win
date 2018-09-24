@@ -1,6 +1,6 @@
-#include "file_icon.h"
+#include "file_image.h"
 
-NAN_METHOD(getIconForPath) {
+NAN_METHOD(getImageForPath) {
     if (info.Length() < 5) {
         Nan::ThrowTypeError("Invalid number of arguments: expected 5 arguments");
         return;
@@ -37,11 +37,11 @@ NAN_METHOD(getIconForPath) {
     auto flags = static_cast<uint32_t>(info[3]->Int32Value());
     auto callback = new Nan::Callback(info[4].As<v8::Function>());
 
-    Nan::AsyncQueueWorker(new FileIconAsyncWorker(*path, width, height, flags, callback));
+    Nan::AsyncQueueWorker(new FileImageAsyncWorker(*path, width, height, flags, callback));
 }
 
 NAN_MODULE_INIT(init) {
-    NAN_EXPORT(target, getIconForPath);
+    NAN_EXPORT(target, getImageForPath);
 
     Nan::Set(
         target,
@@ -104,4 +104,4 @@ NAN_MODULE_INIT(init) {
     );
 }
 
-NODE_MODULE(file_icon, init);
+NODE_MODULE(file_image, init);

@@ -1,4 +1,4 @@
-#include "file_icon.h"
+#include "file_image.h"
 
 namespace Gdiplus {
     using std::max;
@@ -92,7 +92,7 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid) {
     return -1;
 }
 
-HBITMAP GetIconBitmapForPath(const std::string& name, uint32_t width, uint32_t height, uint32_t flags) {
+HBITMAP GetImageBitmapForPath(const std::string& name, uint32_t width, uint32_t height, uint32_t flags) {
     HBITMAP hbmp = NULL;
     PCWSTR errorMessage = NULL;
 
@@ -226,10 +226,10 @@ std::vector<unsigned char> HBitmapToPNG(HBITMAP hBitmap) {
     return result;
 }
 
-std::vector<unsigned char> GetIconForPath(const std::string& name, uint32_t width, uint32_t height, uint32_t flags) {
+std::vector<unsigned char> GetImageForPath(const std::string& name, uint32_t width, uint32_t height, uint32_t flags) {
     ComInit init;
 
-    HBITMAP hBitmap = GetIconBitmapForPath(name, width, height, flags);
+    HBITMAP hBitmap = GetImageBitmapForPath(name, width, height, flags);
 
     if (hBitmap == NULL) {
         return std::vector<unsigned char>{};
@@ -242,6 +242,6 @@ std::vector<unsigned char> GetIconForPath(const std::string& name, uint32_t widt
     return buffer;
 }
 
-void FileIconAsyncWorker::Execute() {
-    this->result = GetIconForPath(this->name, this->width, this->height, this->flags);
+void FileImageAsyncWorker::Execute() {
+    this->result = GetImageForPath(this->name, this->width, this->height, this->flags);
 }

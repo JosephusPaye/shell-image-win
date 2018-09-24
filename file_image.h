@@ -7,9 +7,9 @@
 #include <memory>
 #include <algorithm>
 
-class FileIconAsyncWorker : public Nan::AsyncWorker {
+class FileImageAsyncWorker : public Nan::AsyncWorker {
     public:
-        FileIconAsyncWorker(const char* name, uint32_t width, uint32_t height, uint32_t flags, Nan::Callback* callback)
+        FileImageAsyncWorker(const char* name, uint32_t width, uint32_t height, uint32_t flags, Nan::Callback* callback)
             : Nan::AsyncWorker{callback}, name{ name }, width{ width }, height{ height }, flags{ flags }
         {
             // Empty constructor
@@ -30,7 +30,7 @@ class FileIconAsyncWorker : public Nan::AsyncWorker {
 
                 callback->Call(2, argv);
             } else {
-                v8::Local<v8::Value> argv[] = { Nan::Error("Failed to load icon") };
+                v8::Local<v8::Value> argv[] = { Nan::Error("Failed to load image") };
                 callback->Call(1, argv);
             }
         }

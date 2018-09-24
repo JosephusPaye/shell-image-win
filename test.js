@@ -1,13 +1,14 @@
 const { writeFileSync } = require('fs');
-const fileIconWin = require('./index');
+const shellImageWin = require('./index');
 
-console.log(fileIconWin);
+console.log(shellImageWin);
+const { getImageForPath, flags } = shellImageWin;
 
-fileIconWin.getIconForPath('shell:Profile', 512, 512, fileIconWin.flags.IconBackground, (err, result) => {
+getImageForPath('shell:Fonts', { width: 512, height: 512, flags: flags.IconBackground }, (err, imageBuffer) => {
     if (err) {
         console.error(err);
         return;
     }
 
-    writeFileSync('icon.png', result);
+    writeFileSync('image.png', imageBuffer);
 });

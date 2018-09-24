@@ -32,7 +32,7 @@
             ],
             'sources': [
                 'addon.cpp',
-                'file_icon.cpp',
+                'file_image.cpp',
             ],
             'link_settings': {
                 'libraries': [

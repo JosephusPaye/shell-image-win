@@ -1,7 +1,15 @@
 const addon = require('bindings')('addon');
 
+function getImageForPath(path, options = {}, callback) {
+    options.width = options.width || 256;
+    options.height = options.height || 256;
+    options.flags = options.flags || addon.flags.BiggerSizeOk;
+
+    addon.getImageForPath(path, options.width, options.height, options.flags, callback);
+}
+
 module.exports = {
-    getIconForPath: addon.getIconForPath,
+    getImageForPath,
     flags: {
         ResizeToFit: addon.ResizeToFit,
         BiggerSizeOk: addon.BiggerSizeOk,

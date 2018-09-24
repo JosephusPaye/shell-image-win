@@ -1,10 +1,10 @@
 {
-  "name": "file-icon-win",
-  "description": "Get the shell icon for a given path, as a PNG (Windows)",
+  "name": "shell-image-win",
+  "description": "Get the shell image for a given path, as a PNG buffer on Windows",
   "version": "0.1.0",
   "author": "Josephus Paye II",
   "license": "MIT",
-  "homepage": "https://github.com/JosephusPaye/file-icon-win",
+  "homepage": "https://github.com/JosephusPaye/shell-image-win",
   "main": "index.js",
   "dependencies": {
     "bindings": "~1.3.0",
@@ -14,13 +14,15 @@
     "node": ">=6.0.0"
   },
   "keywords": [
+    "shell",
+    "image",
     "file",
     "icon",
     "windows"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/JosephusPaye/file-icon-win.git"
+    "url": "https://github.com/JosephusPaye/shell-image-win.git"
   },
   "scripts": {
     "install": "node-gyp rebuild",
