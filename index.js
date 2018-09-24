@@ -5,7 +5,20 @@ function getImageForPath(path, options = {}, callback) {
     options.height = options.height || 256;
     options.flags = options.flags || addon.flags.BiggerSizeOk;
 
-    addon.getImageForPath(path, options.width, options.height, options.flags, callback);
+    if (callback === undefined) {
+        return new Promise((resolve, reject) => {
+            addon.getImageForPath(path, options.width, options.height, options.flags, (err, imageBuffer) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                resolve(imageBuffer);
+            });
+        });
+    } else {
+        addon.getImageForPath(path, options.width, options.height, options.flags, callback);
+    }
 }
 
 module.exports = {
