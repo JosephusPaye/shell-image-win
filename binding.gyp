@@ -1,44 +1,42 @@
 {
-    'target_defaults': {
-        'defines': [
-            '_WIN32_WINNT=0x0600',
+    "target_defaults": {
+        "defines": [
+            "_WIN32_WINNT=0x0600",
         ],
-        'msbuild_settings': {
-            'ClCompile': {
-                'WarningLevel': 'Level3',
-                'Optimization': 'Full',
-                'FunctionLevelLinking': 'true',
+        "msbuild_settings": {
+            "ClCompile": {
+                "WarningLevel": "Level3",
+                "Optimization": "Full",
+                "FunctionLevelLinking": "true",
             },
-            'Lib': {
-                'LinkTimeCodeGeneration': 'true',
+            "Lib": {
+                "LinkTimeCodeGeneration": "true",
             },
         },
-        'msvs_settings': {
-            'VCCLCompilerTool': {
-                'WarningLevel': '3',
-                'Optimization': '3',
-                'EnableFunctionLevelLinking': 'true',
+        "msvs_settings": {
+            "VCCLCompilerTool": {
+                "WarningLevel": "3",
+                "Optimization": "3",
+                "EnableFunctionLevelLinking": "true",
             },
-            'VCLibrarianTool': {
-                'LinkTimeCodeGeneration': 'true',
+            "VCLibrarianTool": {
+                "LinkTimeCodeGeneration": "true",
             },
         },
     },
-    'targets': [
+    "targets": [
         {
-            'target_name': 'addon',
-            'include_dirs': [
-                '<!(node -e "require(\'nan\')")',
-            ],
-            'sources': [
-                'addon.cpp',
-                'file_image.cpp',
-            ],
-            'link_settings': {
-                'libraries': [
-                    'Gdiplus.lib',
-                ],
+            "target_name": "shellImageWin",
+            "cflags!": [ "-fno-exceptions" ],
+            "cflags_cc!": [ "-fno-exceptions" ],
+            "sources": ["addon.cpp"],
+            "link_settings": {
+                "libraries": ["Gdiplus.lib"],
             },
-        },
-    ],
+            "include_dirs": [
+                "<!@(node -p \"require('node-addon-api').include\")"
+            ],
+            "defines": [ "NAPI_DISABLE_CPP_EXCEPTIONS" ],
+        }
+    ]
 }

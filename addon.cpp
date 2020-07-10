@@ -1,107 +1,168 @@
-#include "file_image.h"
+#include "get_shell_image.h"
+#include <napi.h>
 
-NAN_METHOD(getImageForPath) {
-    if (info.Length() < 5) {
-        Nan::ThrowTypeError("Invalid number of arguments: expected 5 arguments");
-        return;
+// The async worker that calls the GetImageForPath() to get the image
+class GetShellImageWorker : public Napi::AsyncWorker {
+private:
+  std::string filePath;
+  uint32_t width;
+  uint32_t height;
+  uint32_t flags;
+  std::vector<unsigned char> result;
+
+public:
+  // The constructor: sets the callback and arguments for GetImageForPath()
+  GetShellImageWorker(Napi::Function &callback, std::string filePath,
+                      uint32_t width, uint32_t height, uint32_t flags)
+      : Napi::AsyncWorker{callback}, filePath{filePath}, width{width},
+        height{height}, flags{flags} {}
+
+  // Empty destructor
+  ~GetShellImageWorker() {}
+
+  // Execute the async task: get the image for the given path and set the result
+  void Execute() override {
+    this->result =
+        GetImageForPath(this->filePath, this->width, this->height, this->flags);
+  }
+
+  // OK callback, called when Execute() is ran successfully.
+  // This checks the result and calls the user's JS callback with the image
+  // buffer or an error.
+  void OnOK() override {
+    Napi::HandleScope scope(Env());
+
+    // Check that the extracted image buffer is not empty
+    if (!this->result.empty()) {
+      // The first argument to the callback is null (for no error)
+      // The second argument to the callback is the image buffer
+      Callback().Call(
+          {Env().Null(),
+           Napi::Buffer<char>::Copy(
+               Env(),
+               static_cast<char *>(static_cast<void *>(this->result.data())),
+               this->result.size())});
+    } else {
+      // Call the callback with one argument: the error
+      Callback().Call({Napi::String::New(Env(), "Failed to load image")});
     }
+  }
+};
 
-    if (!info[0]->IsString()) {
-        Nan::ThrowTypeError("Invalid argument 'path': expected String");
-        return;
-    }
+// This method wraps the GetImageForPath() method for Node, via N-API, using an
+// AsyncWorker
+Napi::Value Method(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
 
-    if (!info[1]->IsNumber()) {
-        Nan::ThrowTypeError("Invalid argument 'width': expected Number");
-        return;
-    }
+  if (info.Length() < 5) {
+    Napi::TypeError::New(env,
+                         "Invalid number of arguments: expected 5 arguments")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
-    if (!info[2]->IsNumber()) {
-        Nan::ThrowTypeError("Invalid argument 'height': expected Number");
-        return;
-    }
+  if (!info[0].IsString()) {
+    Napi::TypeError::New(env, "Invalid argument 'path': expected String")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
-    if (!info[3]->IsNumber()) {
-        Nan::ThrowTypeError("Invalid argument 'flags': expected Number");
-        return;
-    }
+  if (!info[1].IsNumber()) {
+    Napi::TypeError::New(env, "Invalid argument 'width': expected Number")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
-    if (!info[4]->IsFunction()) {
-        Nan::ThrowTypeError("Invalid argument 'callback': expected Function");
-        return;
-    }
+  if (!info[2].IsNumber()) {
+    Napi::TypeError::New(env, "Invalid argument 'height': expected Number")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
-    v8::String::Utf8Value path{info[0]->ToString()};
-    auto width = static_cast<uint32_t>(info[1]->Int32Value());
-    auto height = static_cast<uint32_t>(info[2]->Int32Value());
-    auto flags = static_cast<uint32_t>(info[3]->Int32Value());
-    auto callback = new Nan::Callback(info[4].As<v8::Function>());
+  if (!info[3].IsNumber()) {
+    Napi::TypeError::New(env, "Invalid argument 'flags': expected Number")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
-    Nan::AsyncQueueWorker(new FileImageAsyncWorker(*path, width, height, flags, callback));
+  if (!info[4].IsFunction()) {
+    Napi::TypeError::New(env, "Invalid argument 'callback': expected Function")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  // Get the arguments
+  std::string path = info[0].As<Napi::String>().Utf8Value();
+  uint32_t width = info[1].As<Napi::Number>().Uint32Value();
+  uint32_t height = info[2].As<Napi::Number>().Uint32Value();
+  uint32_t flags = info[3].As<Napi::Number>().Uint32Value();
+  Napi::Function callback = info[4].As<Napi::Function>();
+
+  // Create the async worker and queue the task.
+  // This will call Execute() on GetShellImageWorker when a thread is available
+  // to run the task.
+  GetShellImageWorker *worker =
+      new GetShellImageWorker(callback, path, width, height, flags);
+  worker->Queue();
+
+  // Return undefined, the result is returned using the callback
+  return info.Env().Undefined();
 }
 
-NAN_MODULE_INIT(init) {
-    NAN_EXPORT(target, getImageForPath);
+Napi::Object Init(Napi::Env env, Napi::Object exports) {
+  // Export the getImageForPath() method
+  exports.Set(Napi::String::New(env, "getImageForPath"),
+              Napi::Function::New(env, Method));
 
-    Nan::Set(
-        target,
-        Nan::New("ResizeToFit").ToLocalChecked(),
-        Nan::New(static_cast<uint32_t>(SIIGBF_RESIZETOFIT))
-    );
+  // Export the ResizeToFit constant
+  exports.Set(
+      Napi::String::New(env, "ResizeToFit"),
+      Napi::Number::New(env, static_cast<uint32_t>(SIIGBF_RESIZETOFIT)));
 
-    Nan::Set(
-        target,
-        Nan::New("BiggerSizeOk").ToLocalChecked(),
-        Nan::New(static_cast<uint32_t>(SIIGBF_BIGGERSIZEOK))
-    );
+  // Export the BiggerSizeOk constant
+  exports.Set(
+      Napi::String::New(env, "BiggerSizeOk"),
+      Napi::Number::New(env, static_cast<uint32_t>(SIIGBF_BIGGERSIZEOK)));
 
-    Nan::Set(
-        target,
-        Nan::New("MemoryOnly").ToLocalChecked(),
-        Nan::New(static_cast<uint32_t>(SIIGBF_MEMORYONLY))
-    );
+  // Export the MemoryOnly constant
+  exports.Set(Napi::String::New(env, "MemoryOnly"),
+              Napi::Number::New(env, static_cast<uint32_t>(SIIGBF_MEMORYONLY)));
 
-    Nan::Set(
-        target,
-        Nan::New("IconOnly").ToLocalChecked(),
-        Nan::New(static_cast<uint32_t>(SIIGBF_ICONONLY))
-    );
+  // Export the IconOnly constant
+  exports.Set(Napi::String::New(env, "IconOnly"),
+              Napi::Number::New(env, static_cast<uint32_t>(SIIGBF_ICONONLY)));
 
-    Nan::Set(
-        target,
-        Nan::New("ThumbnailOnly").ToLocalChecked(),
-        Nan::New(static_cast<uint32_t>(SIIGBF_THUMBNAILONLY))
-    );
+  // Export the ThumbnailOnly constant
+  exports.Set(
+      Napi::String::New(env, "ThumbnailOnly"),
+      Napi::Number::New(env, static_cast<uint32_t>(SIIGBF_THUMBNAILONLY)));
 
-    Nan::Set(
-        target,
-        Nan::New("InCacheOnly").ToLocalChecked(),
-        Nan::New(static_cast<uint32_t>(SIIGBF_INCACHEONLY))
-    );
+  // Export the InCacheOnly constant
+  exports.Set(
+      Napi::String::New(env, "InCacheOnly"),
+      Napi::Number::New(env, static_cast<uint32_t>(SIIGBF_INCACHEONLY)));
 
-    Nan::Set(
-        target,
-        Nan::New("CropToSquare").ToLocalChecked(),
-        Nan::New(static_cast<uint32_t>(SIIGBF_CROPTOSQUARE))
-    );
+  // Export the CropToSquare constant
+  exports.Set(
+      // Export the CropToSquare constant
+      Napi::String::New(env, "CropToSquare"),
+      Napi::Number::New(env, static_cast<uint32_t>(SIIGBF_CROPTOSQUARE)));
 
-    Nan::Set(
-        target,
-        Nan::New("WideThumbnails").ToLocalChecked(),
-        Nan::New(static_cast<uint32_t>(SIIGBF_WIDETHUMBNAILS))
-    );
+  // Export the WideThumbnails constant
+  exports.Set(
+      Napi::String::New(env, "WideThumbnails"),
+      Napi::Number::New(env, static_cast<uint32_t>(SIIGBF_WIDETHUMBNAILS)));
 
-    Nan::Set(
-        target,
-        Nan::New("IconBackground").ToLocalChecked(),
-        Nan::New(static_cast<uint32_t>(SIIGBF_ICONBACKGROUND))
-    );
+  // Export the IconBackground constant
+  exports.Set(
+      Napi::String::New(env, "IconBackground"),
+      Napi::Number::New(env, static_cast<uint32_t>(SIIGBF_ICONBACKGROUND)));
 
-    Nan::Set(
-        target,
-        Nan::New("ScaleUp").ToLocalChecked(),
-        Nan::New(static_cast<uint32_t>(SIIGBF_SCALEUP))
-    );
+  // Export the ScaleUp constant
+  exports.Set(Napi::String::New(env, "ScaleUp"),
+              Napi::Number::New(env, static_cast<uint32_t>(SIIGBF_SCALEUP)));
+
+  return exports;
 }
 
-NODE_MODULE(file_image, init);
+NODE_API_MODULE(addon, Init)
