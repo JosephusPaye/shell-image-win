@@ -19,7 +19,7 @@ node-addon-api@^3.0.0:
   resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-3.0.0.tgz#812446a1001a54f71663bed188314bba07e09247"
   integrity sha512-sSHCgWfJ+Lui/u+0msF3oyCgvdkhxDbkCS6Q8uiJquzOimkJBvX6hl5aSSA7DR1XbMpdM8r7phjcF63sF4rkKg==
 
-tape-modern@^1.1.1:
+tape-modern@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/tape-modern/-/tape-modern-1.1.2.tgz#8698750ba876f93b8487152313fec26661312ec0"
   integrity sha512-0EWihNQ0t1bMR3fxw2ulmei+YMcyXQucg1mRvsz7cB986IorREwpNm/4+CtLtv4pUP7Z9LDywGKThRfngy/Puw==

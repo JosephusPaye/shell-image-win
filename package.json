@@ -2,17 +2,13 @@
   "name": "shell-image-win",
   "description": "Get the shell image for a given path, as a PNG buffer on Windows",
   "version": "0.2.0",
+  "main": "index.js",
   "author": "Josephus Paye II",
   "license": "MIT",
   "homepage": "https://github.com/JosephusPaye/shell-image-win",
-  "main": "index.js",
-  "dependencies": {
-    "bindings": "^1.5.0",
-    "node-addon-api": "^3.0.0",
-    "tape-modern": "^1.1.1"
-  },
-  "engines": {
-    "node": ">=6.0.0"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JosephusPaye/shell-image-win.git"
   },
   "keywords": [
     "shell",
@@ -21,13 +17,17 @@
     "icon",
     "windows"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/JosephusPaye/shell-image-win.git"
+  "dependencies": {
+    "bindings": "^1.5.0",
+    "node-addon-api": "^3.0.0"
+  },
+  "devDependencies": {
+    "tape-modern": "^1.1.2"
   },
   "scripts": {
     "build": "node-gyp configure build",
     "extract": "node extract-image.js",
     "test": "node test/index.js"
-  }
+  },
+  "gypfile": true
 }
