@@ -18,7 +18,7 @@ npm install JosephusPaye/shell-image-win --save
 const { writeFileSync } = require('fs');
 const { getImageForPath, flags } = require('shell-image-win');
 
-getImageForPath('C:\\', 256, 256, flags.ResizeToFit | flags.IconBackground, (err, imageBuffer) => {
+getImageForPath('C:\\', { width: 256, height: 256, flags: flags.ResizeToFit | flags.IconBackground }, (err, imageBuffer) => {
     if (err) {
         console.error(err);
         return;
