@@ -1,7 +1,7 @@
 {
   "name": "shell-image-win",
   "description": "Get the shell image for a given path, as a PNG buffer on Windows",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "main": "index.js",
   "types": "index.d.ts",
   "author": "Josephus Paye II",
