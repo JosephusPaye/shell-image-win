@@ -22,12 +22,12 @@
     "node-addon-api": "^3.0.0"
   },
   "devDependencies": {
-    "tape-modern": "^1.1.2"
+    "uvu": "^0.3.0"
   },
   "scripts": {
     "build": "node-gyp configure build",
     "extract": "node extract-image.js",
-    "test": "node test/index.js"
+    "test": "uvu tests"
   },
   "gypfile": true
 }
