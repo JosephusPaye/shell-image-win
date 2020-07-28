@@ -3,6 +3,7 @@
   "description": "Get the shell image for a given path, as a PNG buffer on Windows",
   "version": "0.2.0",
   "main": "index.js",
+  "types": "index.d.ts",
   "author": "Josephus Paye II",
   "license": "MIT",
   "homepage": "https://github.com/JosephusPaye/shell-image-win",

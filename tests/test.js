@@ -3,9 +3,7 @@ const path = require('path');
 const { test } = require('uvu');
 const assert = require('uvu/assert');
 
-const shellImageWin = require('..');
-
-const { getImageForPath, flags } = shellImageWin;
+const { getImageForPath, flags } = require('..');
 
 test('it extracts the image for a special shell path', async () => {
     const expectedImageBuffer = fs.readFileSync(path.join(__dirname, 'control-panel.png'));
