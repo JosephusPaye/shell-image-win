@@ -8,6 +8,7 @@
 #include <vector>
 #include <windows.h>
 #include <Gdipluspixelformats.h>
+#pragma comment(lib,"gdiplus.lib")
 
 namespace Gdiplus {
 using std::max;
