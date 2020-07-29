@@ -28,6 +28,7 @@
   },
   "scripts": {
     "build": "cmake-js compile",
+    "install": "cmake-js compile",
     "extract": "node extract-image.js",
     "test": "uvu tests"
   }
